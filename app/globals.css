@@ -3,23 +3,23 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
-  --background-light: #f8fafc;
-  --background-dark: #0f172a;
+  --background-light: #f5f7f8;
+  --background-dark: #101c22;
   --surface-light: #ffffff;
-  --surface-dark: #1e293b;
-  --text-light: #1e293b;
-  --text-dark: #f1f5f9;
-  --muted-light: #64748b;
-  --muted-dark: #94a3b8;
+  --surface-dark: #1e2e37;
+  --text-light: #0d171c;
+  --text-dark: #ffffff;
+  --muted-light: #6b7280;
+  --muted-dark: #9ca3af;
 
   /* Semantic tokens used throughout the app (light defaults). */
   --background: var(--background-light);
   --foreground: var(--text-light);
   --card: var(--surface-light);
-  --muted: #f1f5f9;
-  --border: #e2e8f0;
+  --muted: #e7eff4;
+  --border: #e7eff4;
 
-  --primary: #0284c7;
+  --primary: #25aff4;
   --primary-foreground: #ffffff;
   --secondary: #f97316;
   --secondary-foreground: #ffffff;
@@ -34,8 +34,8 @@
   --background: var(--background-dark);
   --foreground: var(--text-dark);
   --card: var(--surface-dark);
-  --muted: #0b1220;
-  --border: #334155;
+  --muted: #1e2e37;
+  --border: #1e2e37;
 }
 
 @theme inline {

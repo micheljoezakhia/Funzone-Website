@@ -1,184 +1,65 @@
-import Link from "next/link";
-import { LOCATIONS } from "@/data";
-
-const CONTACT = {
-  phone: "+961 1 234 567",
-  email: "hello@funzone.lb",
-  address: ["Main Highway, Zalka,", "Lebanon"],
-};
-
 export function Footer() {
   return (
-    <footer className="border-t border-gray-200 bg-surface-light pb-8 pt-16 dark:border-gray-800 dark:bg-surface-dark">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="mb-12 grid grid-cols-1 gap-12 md:grid-cols-4">
-          <div className="col-span-1 md:col-span-1">
-            <div className="mb-6 flex items-center gap-2">
-              <span
-                className="material-symbols-rounded text-3xl text-primary"
-                aria-hidden="true"
+    <footer className="border-t border-gray-100 bg-white px-6 py-12 dark:border-gray-800 dark:bg-background-dark lg:px-40">
+      <div>
+        <div className="flex flex-col items-center justify-between gap-8 md:flex-row">
+          <div className="flex items-center gap-4">
+            <div className="text-primary size-6" aria-hidden="true">
+              <svg
+                fill="none"
+                viewBox="0 0 48 48"
+                xmlns="http://www.w3.org/2000/svg"
               >
-                celebration
-              </span>
-              <span className="font-display text-xl font-bold text-text-light dark:text-white">
-                FunZone
-              </span>
+                <path
+                  d="M44 4H30.6666V17.3334H17.3334V30.6666H4V44H44V4Z"
+                  fill="currentColor"
+                />
+              </svg>
             </div>
-            <p className="mb-6 text-sm text-muted-light dark:text-muted-dark">
-              Making memories, one smile at a time. The premier family
-              entertainment center in Lebanon.
-            </p>
-            <div className="flex space-x-4">
-              <a
-                className="text-gray-400 transition-colors hover:text-primary"
-                href="#"
-                aria-label="Website"
-              >
-                <span className="material-symbols-rounded" aria-hidden="true">
-                  public
-                </span>
-              </a>
-              <a
-                className="text-gray-400 transition-colors hover:text-primary"
-                href="#"
-                aria-label="Instagram"
-              >
-                <span className="material-symbols-rounded" aria-hidden="true">
-                  photo_camera
-                </span>
-              </a>
-              <a
-                className="text-gray-400 transition-colors hover:text-primary"
-                href={`mailto:${CONTACT.email}`}
-                aria-label="Email"
-              >
-                <span className="material-symbols-rounded" aria-hidden="true">
-                  mail
-                </span>
-              </a>
-            </div>
+            <h2 className="text-lg font-bold text-[#0d171c] dark:text-white">
+              Fun Zone Lebanon
+            </h2>
           </div>
 
-          <div>
-            <h4 className="mb-4 font-bold text-text-light dark:text-white">
-              Locations
-            </h4>
-            <ul className="space-y-2 text-sm text-muted-light dark:text-muted-dark">
-              {LOCATIONS.map((l) => (
-                <li key={l.id}>
-                  <Link
-                    className="transition-colors hover:text-primary"
-                    href={`/locations/${l.slug}`}
-                  >
-                    {l.city}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div>
-            <h4 className="mb-4 font-bold text-text-light dark:text-white">
-              Activities
-            </h4>
-            <ul className="space-y-2 text-sm text-muted-light dark:text-muted-dark">
-              <li>
-                <Link
-                  className="transition-colors hover:text-primary"
-                  href="/activities"
-                >
-                  Soft Play
-                </Link>
-              </li>
-              <li>
-                <Link
-                  className="transition-colors hover:text-primary"
-                  href="/activities"
-                >
-                  Trampoline Park
-                </Link>
-              </li>
-              <li>
-                <Link
-                  className="transition-colors hover:text-primary"
-                  href="/birthdays"
-                >
-                  Birthday Packages
-                </Link>
-              </li>
-              <li>
-                <Link
-                  className="transition-colors hover:text-primary"
-                  href="/contact"
-                >
-                  School Trips
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          <div>
-            <h4 className="mb-4 font-bold text-text-light dark:text-white">
+          <div className="flex flex-wrap justify-center gap-8 text-sm font-medium text-gray-500 dark:text-gray-400">
+            <a className="transition-colors hover:text-primary" href="#">
+              Privacy Policy
+            </a>
+            <a className="transition-colors hover:text-primary" href="#">
+              Terms of Service
+            </a>
+            <a className="transition-colors hover:text-primary" href="#">
+              Careers
+            </a>
+            <a className="transition-colors hover:text-primary" href="/contact">
               Contact
-            </h4>
-            <ul className="space-y-3 text-sm text-muted-light dark:text-muted-dark">
-              <li className="flex items-center gap-2">
-                <span
-                  className="material-symbols-rounded text-lg text-primary"
-                  aria-hidden="true"
-                >
-                  call
-                </span>
-                <a className="hover:text-primary" href={`tel:${CONTACT.phone}`}>
-                  {CONTACT.phone}
-                </a>
-              </li>
-              <li className="flex items-center gap-2">
-                <span
-                  className="material-symbols-rounded text-lg text-primary"
-                  aria-hidden="true"
-                >
-                  mail
-                </span>
-                <a
-                  className="hover:text-primary"
-                  href={`mailto:${CONTACT.email}`}
-                >
-                  {CONTACT.email}
-                </a>
-              </li>
-              <li className="flex items-start gap-2">
-                <span
-                  className="material-symbols-rounded mt-0.5 text-lg text-primary"
-                  aria-hidden="true"
-                >
-                  location_on
-                </span>
-                <span>
-                  {CONTACT.address[0]}
-                  <br />
-                  {CONTACT.address[1]}
-                </span>
-              </li>
-            </ul>
+            </a>
+          </div>
+
+          <div className="flex gap-4">
+            <a className="text-gray-400 transition-colors hover:text-primary" href="#">
+              <span className="material-symbols-outlined" aria-hidden="true">
+                social_leaderboard
+              </span>
+            </a>
+            <a className="text-gray-400 transition-colors hover:text-primary" href="#">
+              <span className="material-symbols-outlined" aria-hidden="true">
+                camera_alt
+              </span>
+            </a>
+            <a className="text-gray-400 transition-colors hover:text-primary" href="#">
+              <span className="material-symbols-outlined" aria-hidden="true">
+                video_library
+              </span>
+            </a>
           </div>
         </div>
 
-        <div className="flex flex-col items-center justify-between gap-4 border-t border-gray-100 pt-8 dark:border-gray-800 md:flex-row">
-          <p className="text-xs text-muted-light dark:text-muted-dark">
-            © {new Date().getFullYear()} Fun Zone Lebanon. All rights reserved.
-          </p>
-          <div className="flex gap-6 text-xs text-muted-light dark:text-muted-dark">
-            <a className="hover:text-text-light dark:hover:text-white" href="#">
-              Privacy Policy
-            </a>
-            <a className="hover:text-text-light dark:hover:text-white" href="#">
-              Terms of Service
-            </a>
-          </div>
+        <div className="mt-12 text-center text-xs text-gray-400 dark:text-gray-600">
+          © {new Date().getFullYear()} Fun Zone Lebanon. All rights reserved.
+          Let&apos;s make memories!
         </div>
       </div>
     </footer>
   );
 }
-

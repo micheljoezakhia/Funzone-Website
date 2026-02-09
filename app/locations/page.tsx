@@ -1,30 +1,14 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { LocationsMapSection } from "@/components/LocationsMapSection";
+import { LocationsLiveMap } from "@/components/LocationsLiveMap";
 import { LOCATIONS } from "@/data";
+import { hoursSummary, telHref, whatsappHref } from "@/lib/format";
 
 export const metadata: Metadata = {
-  title: "Locations",
+  title: "Contact & Locations",
   description:
-    "Find the nearest Fun Zone branch in Lebanon. Browse locations, view activities, and open directions in one tap.",
-};
-
-const TAG_PILLS: Record<string, { label: string; icon: string }> = {
-  indoor: { label: "INDOOR", icon: "home" },
-  outdoor: { label: "OUTDOOR", icon: "sunny" },
-  "toddler-friendly": { label: "TODDLER ZONE", icon: "stroller" },
-  "party-rooms": { label: "PARTY ROOMS", icon: "cake" },
-  parking: { label: "PARKING", icon: "local_parking" },
-  "family-seating": { label: "PARENT SEATING", icon: "chair" },
-  "high-energy": { label: "HIGH ENERGY", icon: "bolt" },
-  spacious: { label: "SPACIOUS", icon: "open_in_full" },
-  "easy-access": { label: "EASY ACCESS", icon: "near_me" },
-  "all-weather": { label: "ALL WEATHER", icon: "cloud" },
-  "family-friendly": { label: "FAMILY", icon: "family_restroom" },
-  lights: { label: "LIGHTS", icon: "wb_incandescent" },
-  "changing-rooms": { label: "CHANGING ROOMS", icon: "checkroom" },
-  "team-friendly": { label: "TEAM FRIENDLY", icon: "groups" },
+    "Find the nearest fun! Explore our locations across Lebanon featuring trampoline parks, soft play zones, and birthday lounges.",
 };
 
 function formatAddress(addressText: string) {
@@ -33,153 +17,280 @@ function formatAddress(addressText: string) {
     .replace(/\s*\(address placeholder\)\s*$/i, "");
 }
 
-function mapsHref(lat: number, lng: number) {
-  const query = encodeURIComponent(`${lat},${lng}`);
-  return `https://www.google.com/maps/search/?api=1&query=${query}`;
+function formatTime12h(value: string) {
+  const match = /^(\d{2}):(\d{2})$/.exec(value.trim());
+  if (!match) return value;
+
+  const hour24 = Number(match[1]);
+  const minute = Number(match[2]);
+  if (!Number.isFinite(hour24) || !Number.isFinite(minute)) return value;
+
+  const period = hour24 >= 12 ? "PM" : "AM";
+  const hour12 = hour24 % 12 === 0 ? 12 : hour24 % 12;
+  if (minute === 0) return `${hour12}:00 ${period}`;
+  return `${hour12}:${String(minute).padStart(2, "0")} ${period}`;
+}
+
+function replaceTimesWith12h(label: string) {
+  return label.replace(/\b(\d{2}:\d{2})\b/g, (m) => formatTime12h(m));
 }
 
 export default function LocationsPage() {
   return (
-    <div
-      className="font-jakarta min-h-screen overflow-x-hidden bg-[#f6f7f8] text-[#111618] dark:bg-[#101d22] dark:text-white"
-    >
-      <section className="mx-auto max-w-4xl px-4 py-16 text-center md:py-24">
-        <div className="flex flex-col items-center gap-4">
-          <span className="rounded-full bg-primary/10 px-4 py-1 text-[11px] font-extrabold uppercase tracking-widest text-primary dark:bg-primary/10">
-            Find your fun
-          </span>
+    <div className="bg-background-light font-jakarta text-[#0d171c] transition-colors duration-300 dark:bg-background-dark dark:text-white">
+      <div className="mx-auto w-full max-w-[1200px] px-6 py-12">
+        <header className="mb-12 flex flex-col items-start justify-between gap-6 md:flex-row md:items-end">
+          <div className="max-w-2xl">
+            <h1 className="mb-4 text-4xl font-black leading-tight tracking-tight md:text-5xl">
+              Visit Our Play Parks
+            </h1>
+            <p className="text-lg font-normal text-gray-600 dark:text-gray-400">
+              Find the nearest fun! Explore our {LOCATIONS.length} premium locations
+              across Lebanon featuring trampoline parks, soft play zones, and birthday
+              lounges.
+            </p>
+          </div>
 
-          <h1 className="text-4xl font-black leading-[1.1] tracking-tight text-[#111618] dark:text-white md:text-6xl">
-            <span className="text-[#111618] dark:text-white">Our</span>{" "}
-            <span className="text-primary">Locations</span>
-          </h1>
+          <a
+            href="#branches"
+            className="inline-flex items-center gap-2 rounded-full bg-[#e7eff4] px-6 py-3 font-bold text-[#0d171c] transition-colors hover:bg-gray-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2 focus-visible:ring-offset-background-light dark:bg-[#1e2e37] dark:text-white dark:hover:bg-gray-700 dark:focus-visible:ring-offset-background-dark"
+          >
+            <span className="material-symbols-outlined text-lg" aria-hidden="true">
+              near_me
+            </span>
+            Find Nearest Branch
+          </a>
+        </header>
 
-          <p className="max-w-2xl text-lg font-medium text-gray-500 dark:text-gray-300">
-            Discover the ultimate playground. Pick your nearest destination and
-            let&apos;s play!
-          </p>
-        </div>
-      </section>
+        <section id="map" className="mb-16 w-full scroll-mt-28" aria-label="Map">
+          <div className="relative aspect-[21/9] w-full overflow-hidden rounded-2xl border-4 border-white bg-gray-200 shadow-xl dark:border-[#1e2e37] dark:bg-gray-800">
+            <LocationsLiveMap
+              locations={LOCATIONS}
+              zoomControlPosition="bottomright"
+              className="absolute inset-0"
+            />
+          </div>
+        </section>
 
-      <section className="mx-auto max-w-[1280px] px-4 pb-24 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:gap-12">
-          {LOCATIONS.map((location, idx) => {
-            const title =
-              location.type === "sports"
-                ? location.name
-                : `${location.city} Branch`;
-            const address = formatAddress(location.addressText);
-            const pills = location.tags
-              .map((t) => TAG_PILLS[t])
-              .filter(Boolean)
-              .slice(0, 3);
-            const imageSrc = location.gallery[0] ?? "/favicon.ico";
+        <section
+          id="branches"
+          className="scroll-mt-28"
+          aria-label="Branches"
+        >
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+            {LOCATIONS.map((location, idx) => {
+              const address = formatAddress(location.addressText);
+              const imageSrc = location.gallery[0] ?? "/favicon.ico";
+              const hours = replaceTimesWith12h(hoursSummary(location.hours));
+              const message = `Hi! I have a question about ${location.name}.`;
 
-            return (
-              <article
-                key={location.id}
-                className="group relative flex flex-col overflow-hidden rounded-2xl border border-black/5 bg-white shadow-sm transition-shadow hover:shadow-lg dark:border-white/10 dark:bg-[#121e24]"
-              >
-                <Link
-                  href={`/locations/${location.slug}`}
-                  className="absolute inset-0 z-10 rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-[#121e24]"
-                  aria-label={`Open ${title}`}
+              return (
+                <article
+                  key={location.id}
+                  className="group relative flex cursor-pointer flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-md transition-all hover:-translate-y-0.5 hover:border-primary/20 hover:shadow-lg focus-within:ring-2 focus-within:ring-primary/20 focus-within:ring-offset-2 focus-within:ring-offset-background-light dark:border-gray-800 dark:bg-[#1e2e37] dark:focus-within:ring-offset-background-dark"
                 >
-                  <span className="sr-only">Open {title}</span>
-                </Link>
-
-                <div className="relative aspect-[16/9] w-full overflow-hidden">
-                  <Image
-                    alt={`${location.name} photo`}
-                    src={imageSrc}
-                    fill
-                    sizes="(max-width: 768px) 100vw, 50vw"
-                    className="object-cover transition-transform duration-700 group-hover:scale-105"
-                    priority={idx < 2}
-                  />
-
-                  <div className="absolute left-4 top-4">
-                    {idx === 0 ? (
-                      <span className="rounded-full bg-primary px-3 py-1.5 text-[11px] font-extrabold uppercase tracking-widest text-white shadow-sm">
-                        Flagship
-                      </span>
-                    ) : location.type === "sports" ? (
-                      <span className="rounded-full bg-primary px-3 py-1.5 text-[11px] font-extrabold uppercase tracking-widest text-white shadow-sm">
-                        Sports
-                      </span>
-                    ) : null}
+                  <Link
+                    href={`/locations/${location.slug}`}
+                    className="absolute inset-0 z-10 rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-[#1e2e37]"
+                    aria-label={`Open ${location.name}`}
+                  >
+                    <span className="sr-only">Open {location.name}</span>
+                  </Link>
+                  <div className="relative h-48 w-full">
+                    <Image
+                      alt={`${location.name} photo`}
+                      src={imageSrc}
+                      fill
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                      className="object-cover transition-transform duration-700 group-hover:scale-105"
+                      priority={idx < 3}
+                    />
                   </div>
-                </div>
 
-                <div className="flex flex-1 flex-col gap-5 p-6 md:p-7">
-                  <div>
-                    <h2 className="text-xl font-extrabold tracking-tight text-[#111618] dark:text-white">
-                      {title}
+                  <div className="flex flex-1 flex-col gap-4 p-6">
+                    <h2 className="text-xl font-extrabold text-[#0d171c] dark:text-white">
+                      {location.name}
                     </h2>
-                    <div className="mt-2 flex items-start gap-2 text-sm font-medium text-gray-500 dark:text-gray-300">
-                      <span
-                        className="material-symbols-outlined mt-0.5 text-base text-primary"
-                        aria-hidden="true"
-                      >
-                        location_on
-                      </span>
-                      <p className="text-sm font-medium">{address}</p>
-                    </div>
-                  </div>
 
-                  {pills.length ? (
-                    <div className="flex flex-wrap gap-2">
-                      {pills.map((pill) => (
+                    <p className="line-clamp-2 text-sm text-gray-600 dark:text-gray-400">
+                      {location.shortDescription}
+                    </p>
+
+                    <div className="space-y-3">
+                      <div className="flex items-start gap-3">
                         <span
-                          key={pill.label}
-                          className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-gray-600 dark:border-white/10 dark:bg-[#101d22] dark:text-gray-200"
+                          className="material-symbols-outlined text-primary"
+                          aria-hidden="true"
                         >
-                          <span
-                            className="material-symbols-outlined text-sm text-primary"
-                            aria-hidden="true"
-                          >
-                            {pill.icon}
-                          </span>
-                          {pill.label}
+                          location_on
                         </span>
-                      ))}
+                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                          {address}
+                        </p>
+                      </div>
+
+                      <div className="flex items-center gap-3">
+                        <span
+                          className="material-symbols-outlined text-primary"
+                          aria-hidden="true"
+                        >
+                          call
+                        </span>
+                        <a
+                          className="relative z-20 text-sm text-gray-600 hover:text-primary dark:text-gray-400 dark:hover:text-primary"
+                          href={telHref(location.phone)}
+                        >
+                          {location.phone}
+                        </a>
+                      </div>
+
+                      <div className="flex items-center gap-3">
+                        <span
+                          className="material-symbols-outlined text-primary"
+                          aria-hidden="true"
+                        >
+                          schedule
+                        </span>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                          {hours}
+                        </p>
+                      </div>
                     </div>
-                  ) : null}
 
-                  <div className="mt-auto grid grid-cols-2 gap-3 pt-1">
-                    <Link
-                      href={`/locations/${location.slug}#activities`}
-                      className="relative z-20 inline-flex h-11 items-center justify-center rounded-full bg-primary px-5 text-sm font-extrabold text-white shadow-sm transition-all hover:bg-sky-700"
-                    >
-                      View Activities
-                    </Link>
-
-                    <a
-                      href={mapsHref(
-                        location.coordinates.lat,
-                        location.coordinates.lng,
-                      )}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="relative z-20 inline-flex h-11 items-center justify-center gap-2 rounded-full border border-gray-200 bg-white px-5 text-sm font-extrabold text-[#111618] transition-colors hover:bg-gray-50 dark:border-white/10 dark:bg-[#101d22] dark:text-white dark:hover:bg-white/5"
-                    >
-                      <span
-                        className="material-symbols-outlined text-base"
-                        aria-hidden="true"
+                    <div className="mt-4 flex gap-2">
+                      <Link
+                        href={`/locations/${location.slug}`}
+                        className="relative z-20 inline-flex h-12 flex-1 items-center justify-center gap-2 rounded-full bg-primary px-6 text-sm font-bold text-white transition-all hover:brightness-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-[#1e2e37]"
+                        aria-label={`Open ${location.name} page`}
                       >
-                        map
-                      </span>
-                      Maps
-                    </a>
-                  </div>
-                </div>
-              </article>
-            );
-          })}
-        </div>
-      </section>
+                        View Details
+                        <span className="material-symbols-outlined text-[18px]" aria-hidden="true">
+                          arrow_forward
+                        </span>
+                      </Link>
 
-      <LocationsMapSection locations={LOCATIONS} />
+                      <a
+                        className="relative z-20 flex size-12 items-center justify-center rounded-full border-2 border-[#25d366] text-[#25d366] transition-all hover:bg-[#25d366] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-[#1e2e37]"
+                        href={whatsappHref(location.whatsapp, message)}
+                        target="_blank"
+                        rel="noreferrer"
+                        aria-label={`WhatsApp ${location.name}`}
+                      >
+                        <span className="material-symbols-outlined" aria-hidden="true">
+                          chat
+                        </span>
+                      </a>
+                    </div>
+                  </div>
+                </article>
+              );
+            })}
+
+            <div className="flex flex-col items-center justify-center gap-4 rounded-2xl border-2 border-dashed border-primary/30 bg-primary/10 p-8 text-center dark:bg-primary/5">
+              <div className="rounded-full bg-primary p-4 text-white">
+                <span className="material-symbols-outlined text-3xl" aria-hidden="true">
+                  mail
+                </span>
+              </div>
+              <h2 className="text-xl font-extrabold text-[#0d171c] dark:text-white">
+                Have a general question?
+              </h2>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                Looking for corporate bookings or school trips? Reach out to our main
+                office.
+              </p>
+              <a className="mt-2 font-bold text-primary hover:underline" href="#main-office">
+                Send us a message
+              </a>
+            </div>
+          </div>
+        </section>
+
+        <section
+          id="main-office"
+          className="mx-auto mt-24 max-w-4xl scroll-mt-28 rounded-3xl bg-white p-8 shadow-xl dark:bg-[#1e2e37] lg:p-12"
+          aria-label="Contact form"
+        >
+          <div className="mb-10 text-center">
+            <h2 className="mb-4 text-3xl font-black">Contact Our Main Office</h2>
+            <p className="text-gray-600 dark:text-gray-400">
+              For franchising, partnerships, or complaints, please use the form below.
+            </p>
+          </div>
+
+          <form className="grid grid-cols-1 gap-6 md:grid-cols-2">
+            <div className="flex flex-col gap-2">
+              <label className="ml-1 text-sm font-bold" htmlFor="locations_full_name">
+                Full Name
+              </label>
+              <input
+                id="locations_full_name"
+                name="fullName"
+                className="h-12 rounded-full border-none bg-background-light px-4 text-sm transition-all focus:ring-2 focus:ring-primary dark:bg-background-dark"
+                placeholder="Your Name"
+                type="text"
+              />
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <label className="ml-1 text-sm font-bold" htmlFor="locations_email">
+                Email Address
+              </label>
+              <input
+                id="locations_email"
+                name="email"
+                className="h-12 rounded-full border-none bg-background-light px-4 text-sm transition-all focus:ring-2 focus:ring-primary dark:bg-background-dark"
+                placeholder="email@example.com"
+                type="email"
+              />
+            </div>
+
+            <div className="flex flex-col gap-2 md:col-span-2">
+              <label className="ml-1 text-sm font-bold" htmlFor="locations_branch">
+                Branch Inquiry
+              </label>
+              <select
+                id="locations_branch"
+                name="branch"
+                className="h-12 rounded-full border-none bg-background-light px-4 text-sm transition-all focus:ring-2 focus:ring-primary dark:bg-background-dark"
+                defaultValue=""
+              >
+                <option value="" disabled>
+                  Select a Branch
+                </option>
+                {LOCATIONS.map((l) => (
+                  <option key={l.id} value={l.slug}>
+                    {l.name}
+                  </option>
+                ))}
+                <option value="general">General / Other</option>
+              </select>
+            </div>
+
+            <div className="flex flex-col gap-2 md:col-span-2">
+              <label className="ml-1 text-sm font-bold" htmlFor="locations_message">
+                Your Message
+              </label>
+              <textarea
+                id="locations_message"
+                name="message"
+                className="resize-none rounded-3xl border-none bg-background-light p-4 text-sm transition-all focus:ring-2 focus:ring-primary dark:bg-background-dark"
+                placeholder="How can we help you?"
+                rows={4}
+              />
+            </div>
+
+            <div className="mt-4 flex justify-center md:col-span-2">
+              <button
+                className="h-14 w-full min-w-[200px] rounded-full bg-primary font-bold text-white shadow-lg transition-all hover:-translate-y-0.5 hover:shadow-primary/30 md:w-auto"
+                type="submit"
+              >
+                Send Message
+              </button>
+            </div>
+          </form>
+        </section>
+      </div>
     </div>
   );
 }

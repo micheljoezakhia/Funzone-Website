@@ -32,6 +32,10 @@ type LeafletMap = {
   invalidateSize: () => void;
 };
 
+type LeafletZoomControl = {
+  addTo: (map: LeafletMap) => LeafletZoomControl;
+};
+
 type LeafletNamespace = {
   map: (
     element: HTMLElement,
@@ -50,6 +54,9 @@ type LeafletNamespace = {
   }) => LeafletIcon;
   marker: (latlng: [number, number], options?: { icon?: LeafletIcon }) => LeafletMarker;
   latLngBounds: (latlngs?: Array<[number, number]>) => LeafletLatLngBounds;
+  control?: {
+    zoom: (options?: { position?: string }) => LeafletZoomControl;
+  };
 };
 
 type LeafletGlobal = { L?: LeafletNamespace };
@@ -191,9 +198,15 @@ function popupHtml(location: Location) {
 export function LocationsLiveMap({
   locations,
   className,
+  zoomControlPosition,
+  showZoomControls = true,
+  showAttribution = true,
 }: {
   locations: Location[];
   className?: string;
+  zoomControlPosition?: "topleft" | "topright" | "bottomleft" | "bottomright";
+  showZoomControls?: boolean;
+  showAttribution?: boolean;
 }) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<LeafletMap | null>(null);
@@ -229,10 +242,14 @@ export function LocationsLiveMap({
       const { url, attribution } = tileConfig(isDark);
 
       const map = L.map(containerRef.current, {
-        zoomControl: true,
-        attributionControl: true,
+        zoomControl: showZoomControls && !zoomControlPosition,
+        attributionControl: showAttribution,
       });
       mapRef.current = map;
+
+      if (showZoomControls && zoomControlPosition && L.control?.zoom) {
+        L.control.zoom({ position: zoomControlPosition }).addTo(map);
+      }
 
       map.scrollWheelZoom.disable();
 
@@ -299,12 +316,12 @@ export function LocationsLiveMap({
       cancelled = true;
       destroy();
     };
-  }, [locations]);
+  }, [locations, zoomControlPosition, showAttribution, showZoomControls]);
 
   return (
     <div
       ref={containerRef}
-      className={cn("h-full w-full", className)}
+      className={cn("h-full w-full isolate", className)}
       role="application"
       aria-label="Map of Lebanon with Fun Zone branches"
     />

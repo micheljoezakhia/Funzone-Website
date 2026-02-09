@@ -100,9 +100,7 @@ export function BranchOpenNow({
   const statusClass =
     result.state === "open"
       ? "text-green-600 dark:text-green-400"
-      : result.state === "closed"
-        ? "text-[#5e7a70] dark:text-gray-300"
-        : "text-[#5e7a70] dark:text-gray-300";
+      : "text-[#5e7a70] dark:text-gray-300";
 
   const detailText =
     result.state === "open" && today?.close
@@ -121,3 +119,4 @@ export function BranchOpenNow({
     </div>
   );
 }
+

@@ -50,7 +50,7 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body className="bg-background-light text-text-light antialiased transition-colors duration-300 dark:bg-background-dark dark:text-text-dark">
+      <body className="bg-background-light font-jakarta text-text-light antialiased transition-colors duration-300 dark:bg-background-dark dark:text-text-dark">
         <a
           href="#main"
           className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-full focus:bg-surface-light focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-text-light focus:shadow-lg dark:focus:bg-surface-dark dark:focus:text-text-dark"
