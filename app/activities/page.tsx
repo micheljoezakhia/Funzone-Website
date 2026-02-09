@@ -58,12 +58,12 @@ export default function ActivitiesPage() {
             >
               Seasonal Colonies
             </a>
-            <a
-              href="#year-round"
+            <Link
+              href="/programs/sports-academy"
               className="shrink-0 rounded-full border border-gray-200 bg-white px-6 py-2 text-sm font-semibold text-[#0d171c] transition-colors hover:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2 focus-visible:ring-offset-background-light dark:border-gray-700 dark:bg-[#1e2e37] dark:text-white dark:hover:border-primary dark:focus-visible:ring-offset-background-dark"
             >
               Sports Academy
-            </a>
+            </Link>
             <a
               href="#year-round"
               className="shrink-0 rounded-full border border-gray-200 bg-white px-6 py-2 text-sm font-semibold text-[#0d171c] transition-colors hover:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2 focus-visible:ring-offset-background-light dark:border-gray-700 dark:bg-[#1e2e37] dark:text-white dark:hover:border-primary dark:focus-visible:ring-offset-background-dark"
@@ -162,17 +162,17 @@ export default function ActivitiesPage() {
 
                   <div className="flex flex-wrap gap-4">
                     <Link
-                      href="/contact"
+                      href="/programs/summer-colony#register"
                       className="inline-flex items-center justify-center rounded-xl bg-primary px-8 py-3 font-bold text-white shadow-lg shadow-primary/30 transition-transform hover:scale-[1.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2 focus-visible:ring-offset-background-light dark:focus-visible:ring-offset-background-dark"
                     >
                       Register Now
                     </Link>
-                    <button
-                      type="button"
+                    <Link
+                      href="/programs/summer-colony"
                       className="inline-flex items-center justify-center rounded-xl border border-gray-200 bg-white px-8 py-3 font-bold text-[#0d171c] transition-colors hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2 focus-visible:ring-offset-background-light dark:border-gray-700 dark:bg-[#1e2e37] dark:text-white dark:hover:bg-white/10 dark:focus-visible:ring-offset-background-dark"
                     >
-                      Download Brochure
-                    </button>
+                      Program Details
+                    </Link>
                   </div>
                 </div>
 

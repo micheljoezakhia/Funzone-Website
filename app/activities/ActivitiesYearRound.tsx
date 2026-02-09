@@ -83,7 +83,13 @@ function activityImageSrc(activityId: string) {
 }
 
 export function ActivitiesYearRound() {
-  const { filteredActivities, selectedBranch, openFilters } = useActivitiesFilters();
+  const { filteredActivities, selectedBranch, branches, openFilters } =
+    useActivitiesFilters();
+
+  const branchBySlug = useMemo(
+    () => new Map(branches.map((b) => [b.slug, b] as const)),
+    [branches],
+  );
 
   const accentActivityId = useMemo(() => {
     const accent =
@@ -102,9 +108,7 @@ export function ActivitiesYearRound() {
     );
   }, [accentActivityId, filteredActivities]);
 
-  const detailsHref = selectedBranch
-    ? `/locations/${selectedBranch.slug}#activities`
-    : "/locations#branches";
+  const defaultDetailsHref = "/locations#branches";
 
   return (
     <section id="year-round" className="scroll-mt-28" aria-label="Year round">
@@ -150,6 +154,22 @@ export function ActivitiesYearRound() {
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4 lg:auto-rows-fr">
         {filteredActivities.map((activity) => {
+          const availableBranches = activity.availableAt
+            .map((slug) => branchBySlug.get(slug))
+            .filter((branch): branch is NonNullable<typeof branch> => Boolean(branch));
+
+          const targetBranch = selectedBranch ?? availableBranches[0];
+          const detailsHref = targetBranch
+            ? `/locations/${targetBranch.slug}#activities`
+            : defaultDetailsHref;
+          const locationLabel = selectedBranch
+            ? selectedBranch.city
+            : availableBranches.length === 0
+              ? "Multiple branches"
+              : availableBranches.length === 1
+                ? availableBranches[0].city
+                : `${availableBranches[0].city} +${availableBranches.length - 1} more`;
+
           const energy = energyPill(activity.energyLevel);
           const category = categoryPill(activity.category);
           const icon = activityIconName(activity.id);
@@ -286,7 +306,7 @@ export function ActivitiesYearRound() {
                     >
                       location_on
                     </span>
-                    {selectedBranch ? selectedBranch.city : "Multiple branches"}
+                    {locationLabel}
                   </span>
                 </div>
 
